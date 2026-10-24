@@ -71,19 +71,15 @@ end
 
 
 B = [0, 11, -5; -2, 17, -7; -4, 26, -10];
-[omega] = q_r(B, 10000)
+[lambda_qr, k, conv] = q_r(B, 1000)
+
+
+% Confronto con i valori di riferimento di eig
+disp('Autovalori di B (eig):'), disp(sort(eig(B))')
+disp('Autovalori di C (eig):'), disp(sort(eig(C))')
+
 
 %%
 
 %si usano potenze, potenze inverse e potenze shiftate per trovare tutte le
 %autocoppie
-
-
-
-
-
-
-
-
-
-
