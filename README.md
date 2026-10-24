@@ -35,7 +35,7 @@ Methods for finding roots of nonlinear scalar equations and nonlinear systems.
 * **Fixed-point iteration:** tuning of a relaxation parameter (λ).
 * **Hybrid Newton-Bisection solver:** combines the robustness of bisection with the speed of Newton-Raphson.
 * **2D nonlinear systems:** multivariable fixed-point iteration with relaxation parameters (ω).
-* **Convergence order benchmarking:** experimental error analysis for simple and multiple roots.
+* **Convergence order estimation:** experimental error tables and estimated order for Newton on a simple root (≈ 2) and a double root (≈ 1).
 
 ### 2. Lagrange Interpolation & ODE Solvers (`lagrange-interpolation-and-ode-solvers`)
 * **Lagrange interpolation (`interpol.m`):** builds the Lagrange basis polynomials and evaluates them on a uniform grid over a closed interval [a, b].
