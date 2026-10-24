@@ -85,7 +85,7 @@ x1 = 5;
 disp(secanti(f, x0, x1, tolleranza, max_iter))
 
 %%
-%es 3
+%es 3 confronto Newton / secanti su x^2 - n
 n_valori = [2, 10, 100]; 
 tol = 1e-10;    
 massimo = 50;   
@@ -141,7 +141,7 @@ function [x , k] = puntofisso(f, lambda, x0, tol, max_iter)
     x = x0;
     for k = 1:max_iter
         x_nuovo = g(x);
-        if abs(x_nuovo - x) < tol
+        if abs(f(x_nuovo)) < tol
             x = x_nuovo;
             return; 
         end
@@ -150,21 +150,22 @@ function [x , k] = puntofisso(f, lambda, x0, tol, max_iter)
     warning('Il metodo del punto fisso non ha raggiunto la tolleranza richiesta (lambda = %f).', lambda);
 end
 
-f = @(x) x.^3 - exp(x) ;
+f = @(x) x.^3 - exp(x);
 tolleranza = 1e-6;
 max_iter = 100;
 x0 = 4;
-lambda = 0.00000001;
-disp(puntofisso(f, lambda, x0, tolleranza, max_iter))
+lambda = 0.03;   % converge se 0 < lambda < 2/|f'(x*)| ~ 0.063, con x* ~ 4.5364
+[x_pf, k_pf] = puntofisso(f, lambda, x0, tolleranza, max_iter);
+fprintf('x = %.8f dopo %d iterazioni, f(x) = %.2e\n', x_pf, k_pf, f(x_pf));
 
 %%
-%es 4
+%es 4 punto fisso su x^2 - 3 al variare di lambda
 f = @(x) x.^2 - 3;
 df = @(x) 2*x; 
 x0 = 2.0; 
 tol = 1e-6;
 max_iter = 1000;
-valori_lambda = [-0.05, -0.1, -0.2, -0.25, -0.3, -0.39];
+valori_lambda = [-0.05, -0.1, -0.2, -0.25, -0.3, -0.39, -0.6, 0.1];
 
 fprintf('Ricerca dello zero di f(x) = x^2 - 3 con Punto Fisso\n');
 fprintf('Punto di partenza x0 = %.2f\n', x0);
@@ -229,48 +230,46 @@ if f(a) * f(b) > 0
     error('La funzione deve cambiare segno nell''intervallo');
 end
 
-x = (a + b) / 2; 
+x = (a + b) / 2;
+metodo_usato = 'Inizio   ';
 fprintf('it |      x_k       |    f(x_k)    |  Metodo\n');
 fprintf('-----------------------------------------------\n');
-
 for k = 1:max_it
     f_val = f(x);
-    df_val = df(x);
-    if k > 1
-    end
+    fprintf('%2d | %12.8f | %10.2e | %s\n', k, x, f_val, metodo_usato);
     if abs(f_val) < tol || (b - a) < tol
-        fprintf('%2d | %12.8f | %10.2e | Terminato (Tol raggiunta)\n', k, x, f_val);
+        fprintf('Terminato: tolleranza raggiunta.\n');
         break;
     end
-    
-    newton_ok = false;
+    % aggiorna l'intervallo con il segno di f(x)
+    if f(a) * f_val < 0
+        b = x;
+    else
+        a = x;
+    end
+    % passo di Newton, accettato solo se cade strettamente dentro [a,b]
+    df_val = df(x);
     if df_val ~= 0
         x_newton = x - f_val / df_val;
-        
-        if x_newton > a && x_newton < b
-            x = x_newton;
-            metodo_usato = 'Newton   ';
-            newton_ok = true;
-        end
+    else
+        x_newton = inf;
     end
-    
-    if ~newton_ok
-        c = (a + b) / 2;
-        if f(a) * f(c) < 0
-            b = c;
-        else
-            a = c;
-        end
-        
+    if x_newton > a && x_newton < b
+        x = x_newton;
+        metodo_usato = 'Newton   ';
+    else
         x = (a + b) / 2;
         metodo_usato = 'Bisezione';
     end
-    
-    fprintf('%2d | %12.8f | %10.2e | %s\n', k, x, f_val, metodo_usato);
 end
 
 %%
 %es 7 
+% Sistema: intersezione di due circonferenze unitarie centrate in (0,0) e (1,0):
+%   x^2 + y^2 = 1,  (x-1)^2 + y^2 = 1   ->  soluzione (0.5, sqrt(3)/2)
+% Punto fisso: x = 1 - sqrt(1 - y^2),  y = sqrt(1 - x^2)
+% Con omega = 1 il raggio spettrale della matrice di iterazione e' 1 (non converge);
+% con omega = 0.5 converge.
 
 tol = 1e-10;
 max_it = 100;
