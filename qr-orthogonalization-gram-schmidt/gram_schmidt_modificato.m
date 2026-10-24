@@ -9,8 +9,8 @@ for j=1:n
         v = v - R(i,j)*Q(:,i);
     end
     R(j,j)=norm(v);
-    if R(j,j)==0
-        error('norma 0!')
+    if R(j,j) <= eps * norm(A(:,j))
+        error('Colonne linearmente dipendenti (norma numericamente nulla).');
     end
     Q(:,j)=v/R(j,j);
 end
